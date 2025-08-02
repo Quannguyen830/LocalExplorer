@@ -2,8 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("org.jetbrains.kotlin.kapt") // Add this line
-    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") // Add this line
+    id("com.google.devtools.ksp") version "2.0.21-1.0.27"
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -52,29 +52,23 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.3") // ViewModel utilities for Compose
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.3") // If you prefer LiveData over StateFlow
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.3")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.3")
 
-    // Compose Navigation
-    implementation("androidx.navigation:navigation-compose:2.8.0-beta02") // Latest stable Navigation Compose
+    implementation("androidx.navigation:navigation-compose:2.8.0-beta02")
 
-    // Retrofit (for RESTful API calls)
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.11.0") // For JSON parsing with Gson
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
 
-    // Coil (for image loading from URLs in Compose)
     implementation("io.coil-kt:coil-compose:2.6.0")
 
-    // Room Database (for local persistence)
     implementation("androidx.room:room-runtime:2.6.1")
-    kapt("androidx.room:room-compiler:2.7.2") // KAPT for annotation processing
-    implementation("androidx.room:room-ktx:2.6.1") // Kotlin Coroutine support for Room
+    ksp("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
 
-    // Google Maps Compose (for map integration)
-    implementation("com.google.maps.android:maps-compose:4.4.0") // Latest stable Maps Compose
-    implementation("com.google.android.gms:play-services-maps:18.2.0") // Base Maps SDK
+    implementation("com.google.maps.android:maps-compose:4.4.0")
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
 
-    // Location Services (for getting user's current location)
     implementation("com.google.android.gms:play-services-location:21.0.1")
 
     testImplementation(libs.junit)

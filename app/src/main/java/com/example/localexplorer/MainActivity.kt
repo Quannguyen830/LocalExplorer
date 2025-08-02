@@ -28,9 +28,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // Remember a NavController to navigate between screens
                     val navController = rememberNavController()
-                    // Our central navigation host
                     AppNavHost(navController = navController)
                 }
             }
@@ -42,7 +40,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun DefaultPreview() {
     LocalExplorerTheme {
-        // Create a dummy NavController for previewing purposes
         AppNavHost(navController = rememberNavController())
     }
 }

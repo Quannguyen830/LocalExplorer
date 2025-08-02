@@ -13,3 +13,7 @@
 .externalNativeBuild
 .cxx
 local.properties
+*.xml
+.idea/misc.xml
+.idea/deploymentTargetSelector.xml
+.idea/deploymentTargetSelector.xml
