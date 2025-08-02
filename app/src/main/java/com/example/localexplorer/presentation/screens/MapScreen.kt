@@ -43,7 +43,6 @@ fun MapScreen(
     
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     
-    // Default camera position (Melbourne city center)
     val defaultPosition = LatLng(-37.8136, 144.9631)
     val focusPosition = if (focusLatitude != null && focusLongitude != null) {
         LatLng(focusLatitude, focusLongitude)

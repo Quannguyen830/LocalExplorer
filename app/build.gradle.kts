@@ -10,6 +10,10 @@ android {
     namespace = "com.example.localexplorer"
     compileSdk = 36
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "com.example.localexplorer"
         minSdk = 24
@@ -18,6 +22,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "FOURSQUARE_API_KEY", "\"${project.findProperty("FOURSQUARE_API_KEY") ?: ""}\"")
     }
 
     buildTypes {
@@ -38,6 +43,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

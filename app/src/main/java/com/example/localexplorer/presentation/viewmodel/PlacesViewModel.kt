@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.localexplorer.data.PlaceRepository
-import com.example.localexplorer.data.MockDataProvider
+import com.example.localexplorer.data.DataProvider
 import com.example.localexplorer.domain.Place
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -91,7 +91,7 @@ class PlacesViewModel(
             try {
                 val places = repository.getAllPlaces().first()
                 if (places.isEmpty()) {
-                    repository.insertPlaces(MockDataProvider.getMockPlaces())
+                    repository.insertPlaces(DataProvider.getPlaces())
                 }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
@@ -107,7 +107,7 @@ class PlacesViewModel(
     
     fun getCurrentSearchQuery(): String = _searchQuery.value
     fun getCurrentCategory(): String = _selectedCategory.value
-    fun getCategories(): List<String> = MockDataProvider.getCategories()
+    fun getCategories(): List<String> = DataProvider.getCategories()
 }
 
 data class PlacesUiState(
