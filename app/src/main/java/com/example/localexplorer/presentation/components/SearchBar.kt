@@ -18,39 +18,32 @@ fun SearchBar(
     placeholder: String = "Search places...",
     modifier: Modifier = Modifier
 ) {
+    // basic search bar - could add more features later
     OutlinedTextField(
         value = query,
         onValueChange = onQueryChanged,
         modifier = modifier.fillMaxWidth(),
         placeholder = {
-            Text(
-                text = placeholder,
-                style = MaterialTheme.typography.bodyMedium
-            )
+            Text(text = placeholder)
         },
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = "Search",
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                contentDescription = "Search"
             )
         },
         trailingIcon = {
+            // clear button when there's text
             if (query.isNotEmpty()) {
                 IconButton(onClick = { onQueryChanged("") }) {
                     Icon(
                         imageVector = Icons.Default.Clear,
-                        contentDescription = "Clear search",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        contentDescription = "Clear"
                     )
                 }
             }
         },
         shape = RoundedCornerShape(12.dp),
-        singleLine = true,
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.outline
-        )
+        singleLine = true
     )
-} 
+}

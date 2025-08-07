@@ -13,30 +13,25 @@ import kotlinx.coroutines.launch
 class MapViewModel(
     private val repository: PlaceRepository
 ) : ViewModel() {
-    
+
+    // state for map screen
     private val _uiState = MutableStateFlow(MapUiState())
     val uiState: StateFlow<MapUiState> = _uiState.asStateFlow()
-    
+
     init {
         loadPlaces()
     }
-    
+
     private fun loadPlaces() {
         viewModelScope.launch {
-            try {
-                _uiState.value = _uiState.value.copy(isLoading = true)
-                
-                repository.getAllPlaces().collect { places ->
-                    _uiState.value = _uiState.value.copy(
-                        places = places,
-                        isLoading = false,
-                        errorMessage = null
-                    )
-                }
-            } catch (e: Exception) {
+            _uiState.value = _uiState.value.copy(isLoading = true)
+
+            // just get all places and show on map
+            repository.getAllPlaces().collect { places ->
+                println("Loaded ${places.size} places for map") // debug
                 _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    errorMessage = "Failed to load places: ${e.message}"
+                    places = places,
+                    isLoading = false
                 )
             }
         }
@@ -52,29 +47,18 @@ class MapViewModel(
     
     fun onFavoriteToggled(placeId: String) {
         viewModelScope.launch {
-            try {
-                val place = repository.getPlaceById(placeId)
-                place?.let {
-                    repository.updateFavoriteStatus(placeId, !it.isFavorite)
-                }
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    errorMessage = "Failed to update favorite: ${e.message}"
-                )
+            val place = repository.getPlaceById(placeId)
+            place?.let {
+                repository.updateFavoriteStatus(placeId, !it.isFavorite)
             }
         }
-    }
-    
-    fun clearError() {
-        _uiState.value = _uiState.value.copy(errorMessage = null)
     }
 }
 
 data class MapUiState(
     val places: List<Place> = emptyList(),
     val selectedPlace: Place? = null,
-    val isLoading: Boolean = false,
-    val errorMessage: String? = null
+    val isLoading: Boolean = false
 )
 
 class MapViewModelFactory(

@@ -7,7 +7,8 @@ import kotlinx.coroutines.flow.map
 class PlaceRepository(
     private val placeDao: PlaceDao
 ) {
-    
+
+    // get all places from database
     fun getAllPlaces(): Flow<List<Place>> {
         return placeDao.getAllPlaces().map { entities ->
             entities.map { it.toDomainModel() }
@@ -52,11 +53,13 @@ class PlaceRepository(
         placeDao.deletePlace(place.toEntity())
     }
 
+    // this function doesn't do anything but keeping it just in case
     suspend fun seedInitialData() {
-        val existingPlaces = placeDao.getAllPlaces()
+        // TODO: maybe implement this later
     }
 }
 
+// extension functions to convert between entity and domain models
 private fun PlaceEntity.toDomainModel(): Place {
     return Place(
         id = id,
@@ -81,4 +84,4 @@ private fun Place.toEntity(): PlaceEntity {
         category = category,
         isFavorite = isFavorite
     )
-} 
+}

@@ -21,10 +21,12 @@ object DataProvider {
     
     suspend fun getPlaces(): List<Place> {
         return withContext(Dispatchers.IO) {
+            // just try to get from foursquare, if it fails return empty list
             try {
                 fetchPlacesFromFoursquare()
             } catch (e: Exception) {
-                getStaticFallbackPlaces()
+                println("API failed: ${e.message}") // debug
+                emptyList() // return empty if API fails
             }
         }
     }
@@ -32,39 +34,35 @@ object DataProvider {
     private suspend fun fetchPlacesFromFoursquare(): List<Place> {
         val apiKey = BuildConfig.FOURSQUARE_API_KEY
         if (apiKey.isEmpty()) {
-            throw Exception("Foursquare API key not configured")
+            throw Exception("API key not set")
         }
-        
+
         val allPlaces = mutableListOf<Place>()
-        
+
+        // get places for each category - this might be slow but whatever
         FoursquareApiService.CATEGORY_MAPPINGS.forEach { (categoryName, categoryId) ->
-            try {
-                val response = foursquareService.searchPlaces(
-                    authorization = apiKey,
-                    latLng = FoursquareApiService.MELBOURNE_LAT_LNG,
-                    categories = categoryId,
-                    limit = 3
-                )
-                
-                allPlaces.addAll(response.results.map { venue ->
-                    mapFoursquareVenueToPlace(venue, categoryName)
-                })
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            val response = foursquareService.searchPlaces(
+                authorization = apiKey,
+                latLng = FoursquareApiService.MELBOURNE_LAT_LNG, // hardcoded melbourne for now
+                categories = categoryId,
+                limit = 3
+            )
+
+            allPlaces.addAll(response.results.map { venue ->
+                mapFoursquareVenueToPlace(venue, categoryName)
+            })
         }
-        
-        return if (allPlaces.isNotEmpty()) allPlaces else getStaticFallbackPlaces()
+
+        return allPlaces
     }
     
     private fun mapFoursquareVenueToPlace(venue: FoursquareVenue, categoryName: String): Place {
-        val imageUrl = venue.photos?.firstOrNull()?.getImageUrl("800x600") 
+        // get image from venue or use default
+        val imageUrl = venue.photos?.firstOrNull()?.getImageUrl("800x600")
             ?: getDefaultImageForCategory(categoryName)
-        
-        val description = venue.description 
-            ?: venue.location.formattedAddress 
-            ?: "Located in Melbourne"
-        
+
+        val description = venue.description ?: venue.location.formattedAddress ?: "No description"
+
         return Place(
             id = venue.fsqId,
             name = venue.name,
@@ -88,37 +86,7 @@ object DataProvider {
         }
     }
     
-    private fun getStaticFallbackPlaces(): List<Place> {
-        return listOf(
-            Place(
-                id = "fallback_1",
-                name = "Queen Victoria Market",
-                description = "Historic market with fresh produce, gourmet foods, and unique souvenirs.",
-                latitude = -37.8076,
-                longitude = 144.9568,
-                imageUrl = "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800",
-                category = "Shopping"
-            ),
-            Place(
-                id = "fallback_2",
-                name = "Royal Botanic Gardens",
-                description = "Beautiful botanical gardens with diverse plant collections and peaceful walking paths.",
-                latitude = -37.8304,
-                longitude = 144.9796,
-                imageUrl = "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-                category = "Park"
-            ),
-            Place(
-                id = "fallback_3",
-                name = "Melbourne Museum",
-                description = "Interactive museum showcasing natural and cultural history.",
-                latitude = -37.8033,
-                longitude = 144.9717,
-                imageUrl = "https://images.unsplash.com/photo-1565035010268-a3816f98589a?w=800",
-                category = "Museum"
-            )
-        )
-    }
+
     
     fun getCategories(): List<String> {
         return listOf("All", "Café", "Restaurant", "Park", "Museum", "Shopping", "Entertainment")

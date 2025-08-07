@@ -27,6 +27,7 @@ fun PlaceCard(
     onFavoriteClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // card for displaying place info
     Card(
         modifier = modifier
             .fillMaxWidth()

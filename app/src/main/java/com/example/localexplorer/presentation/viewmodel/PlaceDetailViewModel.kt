@@ -13,65 +13,45 @@ import kotlinx.coroutines.launch
 class PlaceDetailViewModel(
     private val repository: PlaceRepository
 ) : ViewModel() {
-    
+
+    // state for place detail screen
     private val _uiState = MutableStateFlow(PlaceDetailUiState())
     val uiState: StateFlow<PlaceDetailUiState> = _uiState.asStateFlow()
-    
+
     fun loadPlace(placeId: String) {
         viewModelScope.launch {
-            try {
-                _uiState.value = _uiState.value.copy(isLoading = true)
-                
-                val place = repository.getPlaceById(placeId)
-                if (place != null) {
-                    _uiState.value = _uiState.value.copy(
-                        place = place,
-                        isLoading = false,
-                        errorMessage = null
-                    )
-                } else {
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        errorMessage = "Place not found"
-                    )
-                }
-            } catch (e: Exception) {
+            _uiState.value = _uiState.value.copy(isLoading = true)
+
+            val place = repository.getPlaceById(placeId)
+            if (place != null) {
                 _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    errorMessage = "Failed to load place: ${e.message}"
+                    place = place,
+                    isLoading = false
                 )
+            } else {
+                // place not found - shouldn't happen but just in case
+                _uiState.value = _uiState.value.copy(isLoading = false)
             }
         }
     }
     
     fun onFavoriteToggled() {
         val currentPlace = _uiState.value.place ?: return
-        
+
         viewModelScope.launch {
-            try {
-                repository.updateFavoriteStatus(currentPlace.id, !currentPlace.isFavorite)
-                
-                // Update local state immediately for better UX
-                _uiState.value = _uiState.value.copy(
-                    place = currentPlace.copy(isFavorite = !currentPlace.isFavorite)
-                )
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    errorMessage = "Failed to update favorite: ${e.message}"
-                )
-            }
+            repository.updateFavoriteStatus(currentPlace.id, !currentPlace.isFavorite)
+
+            // update UI immediately so it feels responsive
+            _uiState.value = _uiState.value.copy(
+                place = currentPlace.copy(isFavorite = !currentPlace.isFavorite)
+            )
         }
-    }
-    
-    fun clearError() {
-        _uiState.value = _uiState.value.copy(errorMessage = null)
     }
 }
 
 data class PlaceDetailUiState(
     val place: Place? = null,
-    val isLoading: Boolean = false,
-    val errorMessage: String? = null
+    val isLoading: Boolean = false
 )
 
 class PlaceDetailViewModelFactory(

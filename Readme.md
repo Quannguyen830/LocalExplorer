@@ -63,3 +63,7 @@ app/build/outputs/apk/debug/app-debug.apk
 
 ## Video Demo
 https://rmiteduau.sharepoint.com/:v:/s/MyOwnTeam227/EQxEiTPfeldKhHcXHBSczj0BA6Fjqj9ef8WyntA9OCqN5w?e=gfI3Pi&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D
+
+## Github Repo
+https://github.com/Quannguyen830/LocalExplorer
+

@@ -13,30 +13,25 @@ import kotlinx.coroutines.launch
 class FavoritesViewModel(
     private val repository: PlaceRepository
 ) : ViewModel() {
-    
+
+    // favorites screen state
     private val _uiState = MutableStateFlow(FavoritesUiState())
     val uiState: StateFlow<FavoritesUiState> = _uiState.asStateFlow()
-    
+
     init {
         loadFavorites()
     }
-    
+
     private fun loadFavorites() {
         viewModelScope.launch {
-            try {
-                _uiState.value = _uiState.value.copy(isLoading = true)
-                
-                repository.getFavoritePlaces().collect { favorites ->
-                    _uiState.value = _uiState.value.copy(
-                        favorites = favorites,
-                        isLoading = false,
-                        errorMessage = null
-                    )
-                }
-            } catch (e: Exception) {
+            _uiState.value = _uiState.value.copy(isLoading = true)
+
+            // get favorite places from database
+            repository.getFavoritePlaces().collect { favorites ->
+                println("Loaded ${favorites.size} favorites") // debug
                 _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    errorMessage = "Failed to load favorites: ${e.message}"
+                    favorites = favorites,
+                    isLoading = false
                 )
             }
         }
@@ -44,25 +39,15 @@ class FavoritesViewModel(
     
     fun onFavoriteRemoved(placeId: String) {
         viewModelScope.launch {
-            try {
-                repository.updateFavoriteStatus(placeId, false)
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    errorMessage = "Failed to remove favorite: ${e.message}"
-                )
-            }
+            // remove from favorites
+            repository.updateFavoriteStatus(placeId, false)
         }
-    }
-    
-    fun clearError() {
-        _uiState.value = _uiState.value.copy(errorMessage = null)
     }
 }
 
 data class FavoritesUiState(
     val favorites: List<Place> = emptyList(),
-    val isLoading: Boolean = false,
-    val errorMessage: String? = null
+    val isLoading: Boolean = false
 )
 
 class FavoritesViewModelFactory(
